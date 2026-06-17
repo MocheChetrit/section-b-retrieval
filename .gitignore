@@ -1,0 +1,15 @@
+data/Wikipedia Entries/
+__pycache__/
+*.pyc
+artifacts/index_vectors_base034.npy
+artifacts/lexical_index_v3.pkl
+.baseline_local.json
+*.tar.gz
+*.log
+ft_split.json
+artifacts/lexical_index_v2.pkl
+debug_recall.py
+inspect_errors.py
+*.npy
+!artifacts/index_vectors.npy
+tune_weights.py
