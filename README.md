@@ -3,7 +3,7 @@
 Hybrid retrieval pipeline (dense + lexical) over a Wikipedia-style corpus.
 For each query, `run(queries)` returns a ranked list of `page_id`, evaluated with NDCG@10.
 
-**Public NDCG@10: 0.4458** — query phase ~7 s (well under the 60 s limit).
+**Public NDCG@10: 0.4458** — query phase ~9 s (well under the 60 s limit).
 
 **Video presentation:** https://drive.google.com/file/d/1MdgtaVFzcAzIdQ1xSU9MdVr0t0RO7l9w/view?usp=sharing
 
@@ -69,7 +69,7 @@ Prints mean NDCG@10 on the 50 public queries.
 | `bm25_vocab.pkl` | BM25 vocabulary (token to id) |
 | `finetuned_minilm/` | The fine-tuned MiniLM checkpoint used at query time |
 
-`run()` loads these directly and does **not** rebuild the index at grading time.
+`run()` loads these directly and does **not** rebuild the index.
 
 ---
 
