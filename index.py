@@ -1,4 +1,4 @@
-"""Construction et chargement de l'index dense (offline)."""
+"""Building and loading the dense index (offline)."""
 from __future__ import annotations
 
 import json
