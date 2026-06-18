@@ -7,7 +7,7 @@ For each query, `run(queries)` returns a ranked list of `page_id`, evaluated wit
 
 **Video presentation:** https://drive.google.com/file/d/1MdgtaVFzcAzIdQ1xSU9MdVr0t0RO7l9w/view?usp=sharing
 
-Authors:  Moche Chetrit (<340872084>), Naomi Chauvart (<337917843>)
+Authors:  Moche Chetrit (340872084), Naomi Chauvart (337917843)
 
 ---
 
