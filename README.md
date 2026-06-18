@@ -3,11 +3,11 @@
 Hybrid retrieval pipeline (dense + lexical) over a Wikipedia-style corpus.
 For each query, `run(queries)` returns a ranked list of `page_id`, evaluated with NDCG@10.
 
-**Public NDCG@10: 0.4458** — query phase ~10 s (well under the 60 s limit).
+**Public NDCG@10: 0.4458** — query phase ~7 s (well under the 60 s limit).
 
 **Video presentation:** https://drive.google.com/file/d/1MdgtaVFzcAzIdQ1xSU9MdVr0t0RO7l9w/view?usp=sharing
 
-Authors: <Moche Chetrit> (340872084), <Naomi Chauvart> (337917843)
+Authors: <Your Name> (<ID1>), <Teammate Name> (<ID2>)
 
 ---
 
@@ -23,11 +23,12 @@ Authors: <Moche Chetrit> (340872084), <Naomi Chauvart> (337917843)
 - **Fusion** — Reciprocal Rank Fusion of the two rankings (dense weight 3.0,
   BM25 weight 2.0).
 
-| Variant                      |   NDCG@10  |
-| Dense only (base, max-pool)  |    0.165   |
-| BM25 only                    |    0.230   |
-| Hybrid RRF (base encoder)    |    0.218   |
-| + mean-pooling               |    0.271   |
+| Variant | NDCG@10 |
+|---|---|
+| Dense only (base, max-pool) | 0.165 |
+| BM25 only | 0.230 |
+| Hybrid RRF (base encoder) | 0.218 |
+| + mean-pooling | 0.271 |
 | + fine-tuned encoder (final) | **0.4458** |
 
 The fine-tuning gain was validated on held-out queries (35 train / 15 validation)
@@ -60,12 +61,13 @@ Prints mean NDCG@10 on the 50 public queries.
 
 ## Artifacts (`artifacts/`, committed via Git LFS)
 
-| File                |                   Description                        |
+| File | Description |
+|---|---|
 | `index_vectors.npy` | Chunk embeddings, stored as float16 for fast loading |
-| `index_meta.json`   | Chunk-to-page metadata                               |
-| `bm25_index.npz`    | Precomputed chunk-level BM25 index (compressed)      |
-| `bm25_vocab.pkl`    | BM25 vocabulary (token to id)                        |
-| `finetuned_minilm/` | The fine-tuned MiniLM checkpoint used at query time  |
+| `index_meta.json` | Chunk-to-page metadata |
+| `bm25_index.npz` | Precomputed chunk-level BM25 index (compressed) |
+| `bm25_vocab.pkl` | BM25 vocabulary (token to id) |
+| `finetuned_minilm/` | The fine-tuned MiniLM checkpoint used at query time |
 
 `run()` loads these directly and does **not** rebuild the index at grading time.
 
@@ -73,7 +75,7 @@ Prints mean NDCG@10 on the 50 public queries.
 
 ## Rebuilding the index (optional, offline only)
 
-To rebuild from scratch on your own machine:
+Not needed for grading. To rebuild from scratch on your own machine:
 
 ```bash
 python scripts/build_index.py     # embeds the corpus into artifacts/
