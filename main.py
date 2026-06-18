@@ -1,8 +1,8 @@
 """
 Section B entry point.
 
-L'autograder appelle run(queries) une fois avec toutes les requêtes (batch de 50).
-L'embedding des requêtes + la recherche doivent tenir dans la limite de temps (GPU dispo).
+The autograder calls run(queries) once with all queries (batch of 50).
+Query embedding + retrieval must fit within the time limit (GPU available).
 """
 from __future__ import annotations
 
@@ -13,16 +13,16 @@ from retrieve import search_batch
 
 
 def run(queries: List[str]) -> List[List[int]]:
-    """Renvoie, pour chaque requête, la liste ordonnée des page_id (plus pertinent d'abord)."""
+    """Returns, for each query, the ordered list of page_ids (most relevant first)."""
     return search_batch(queries)
 
 
 def build_offline_index() -> None:
-    """À lancer une fois en local pour créer artifacts/ (non chronométré au grading)."""
+    """Run once locally to create artifacts/ (not timed during grading)."""
     build_index()
 
-    # On pré-construit aussi le cache BM25 pour que `run()` ne le reconstruise pas
-    # au grading (compte pour le critère "seamless run" du barème GitHub).
+    # We also pre-build the BM25 cache so that `run()` does not rebuild it
+    # during grading (this counts toward the GitHub rubric's "seamless run" criterion).
     from retrieve import _get_lexical_index
 
     _get_lexical_index()
