@@ -7,7 +7,7 @@ For each query, `run(queries)` returns a ranked list of `page_id`, evaluated wit
 
 **Video presentation:** https://drive.google.com/file/d/1MdgtaVFzcAzIdQ1xSU9MdVr0t0RO7l9w/view?usp=sharing
 
-Authors: <Your Name> (<ID1>), <Teammate Name> (<ID2>)
+Authors:  Moche Chetrit (<340872084>), Naomi Chauvart (<337917843>)
 
 ---
 
@@ -75,7 +75,7 @@ Prints mean NDCG@10 on the 50 public queries.
 
 ## Rebuilding the index (optional, offline only)
 
-Not needed for grading. To rebuild from scratch on your own machine:
+To rebuild from scratch on your own machine:
 
 ```bash
 python scripts/build_index.py     # embeds the corpus into artifacts/
