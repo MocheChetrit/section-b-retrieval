@@ -1,4 +1,4 @@
-"""Préprocessing et découpage en chunks (version simplifiée)."""
+"""Preprocessing and chunking (simplified version)."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -12,8 +12,8 @@ class Chunk:
     text: str
 
 
-# Fenêtres courtes : meilleur matching factuel + max-pooling plus précis au query-time.
-# On reste sous la limite effective de MiniLM (256 wordpieces) une fois le titre ajouté.
+# Short windows: better factual matching + more precise max-pooling at query time.
+# We stay below MiniLM's effective limit (256 wordpieces) once the title is added.
 WINDOW_TOKENS = 160
 STRIDE_TOKENS = 80
 MIN_CHUNK_TOKENS = 20
@@ -28,14 +28,14 @@ def chunk_entry(record: Dict[str, Any]) -> List[Chunk]:
     title = _clean_space(record.get("title", ""))
     content = _clean_space(record.get("content", ""))
 
-    # Le titre est préfixé sur CHAQUE chunk : il ancre l'entité pour MiniLM
-    # (un texte naturel s'encode mieux qu'un template "Title: ... Content: ...").
+    # The title is prefixed to EVERY chunk: it anchors the entity for MiniLM
+    # (natural text is encoded better than a "Title: ... Content: ..." template).
     prefix = f"{title}. " if title else ""
 
     words = content.split()
     chunks: List[Chunk] = []
 
-    # Page sans contenu : le titre suffit à représenter la page.
+    # Page with no content: the title is enough to represent the page.
     if not words:
         chunks.append(Chunk(page_id=page_id, chunk_id=0, text=title))
         return chunks
@@ -44,7 +44,7 @@ def chunk_entry(record: Dict[str, Any]) -> List[Chunk]:
     for start in range(0, len(words), STRIDE_TOKENS):
         part = words[start : start + WINDOW_TOKENS]
 
-        # On garde toujours le 1er chunk ; on coupe ensuite si la fenêtre est trop courte.
+        # We always keep the 1st chunk; then we truncate if the window is too short.
         if chunk_id > 0 and len(part) < MIN_CHUNK_TOKENS:
             break
 
