@@ -1,10 +1,11 @@
-"""Recuperation au query-time : dense mean-pool + BM25 chunk-level vectorise, fusion RRF.
+"""Query-time retrieval: dense mean-pooling + vectorized chunk-level BM25, RRF fusion.
 
-Optimisations de taille (pour un chargement disque rapide a froid) :
-  - vecteurs stockes en float16, reconvertis en float32 au chargement ;
-  - index BM25 stocke compresse (savez_compressed), poids/idf en float16.
-Le calcul reste mathematiquement identique -> score inchange.
+Size optimizations (for fast cold disk loading):
+  - vectors stored as float16, converted back to float32 when loaded;
+  - BM25 index stored compressed (savez_compressed), weights/idf in float16.
+The computation remains mathematically identical -> unchanged score.
 """
+
 from __future__ import annotations
 
 import math
@@ -43,6 +44,8 @@ BM25_K1 = 1.5
 BM25_B = 0.75
 
 
+# Tokenizes text for BM25: lowercases words, removes stopwords/very short tokens,
+# adds a simple singular form for plural words, and maps years to decade tokens.
 def _tokens(text: str) -> List[str]:
     raw = _WORD_RE.findall(text.lower())
     out: List[str] = []
@@ -59,6 +62,9 @@ def _tokens(text: str) -> List[str]:
     return out
 
 
+# Builds and saves a compressed chunk-level BM25 lexical index:
+# tokenizes all chunks, computes postings, BM25 weights and IDF,
+# stores the index/vocabulary in artifacts/, and returns it ready for query-time use.
 def _build_lexical_index():
     records = list(iter_entries())
     chunks = chunk_corpus(records)
@@ -109,6 +115,8 @@ def _build_lexical_index():
             "n_chunks": n_chunks, "vocab": vocab}
 
 
+# Loads the BM25 lexical index from memory or disk if available;
+# otherwise builds it once, caches it globally, and returns it for query-time retrieval.
 def _get_lexical_index():
     global _LEX_CACHE
     if _LEX_CACHE is not None:
@@ -134,6 +142,9 @@ def _get_lexical_index():
     return _LEX_CACHE
 
 
+# Computes BM25 scores for all chunks for a given query:
+# finds matching query terms in the vocabulary, accumulates their weighted postings,
+# and returns one lexical relevance score per chunk.
 def _bm25_chunk_scores(query: str, lex, n_chunks: int) -> np.ndarray:
     vocab = lex["vocab"]; off = lex["term_off"]
     pc = lex["post_chunk"]; pw = lex["post_w"]; idf = lex["idf"]
@@ -157,6 +168,7 @@ def _bm25_chunk_scores(query: str, lex, n_chunks: int) -> np.ndarray:
     return cs.astype(np.float32)
 
 
+# Converts scores into ranks: highest score gets rank 0, second-highest rank 1, etc.
 def _ranks(scores: np.ndarray) -> np.ndarray:
     order = np.argsort(-scores, kind="stable")
     r = np.empty(len(scores), dtype=np.int64)
@@ -164,6 +176,10 @@ def _ranks(scores: np.ndarray) -> np.ndarray:
     return r
 
 
+# Runs retrieval for a batch of queries:
+# loads the dense index, embeds the queries, computes dense page scores and BM25 page scores,
+# then fuses both rankings with weighted Reciprocal Rank Fusion (RRF)
+# and returns the top page_ids for each query.
 def search_batch(
     queries: List[str],
     *,
