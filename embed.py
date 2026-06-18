@@ -1,4 +1,4 @@
-"""Embedding (all-MiniLM-L6-v2, ou modele fine-tune si artifacts/finetuned_minilm existe)."""
+"""Embedding (all-MiniLM-L6-v2, or fine-tuned model if artifacts/finetuned_minilm exists)."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -24,7 +24,7 @@ def get_model():
 
 
 def embed_texts(texts: Sequence[str], *, batch_size: int = 64) -> np.ndarray:
-    """Renvoie des embeddings L2-normalises, shape (n, dim)."""
+    """Returns L2-normalized embeddings, shape (n, dim)."""
     if not texts:
         return np.zeros((0, 384), dtype=np.float32)
     model = get_model()
